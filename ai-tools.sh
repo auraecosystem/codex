@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ai_cli_installer - Installer for AI CLI tools
-# Version: 2.2.0
+# Version: 3.0.0
 
 set -euo pipefail
 
 ###############################################################################
 ## Constants
 ###############################################################################
-readonly SCRIPT_VERSION="2.2.0"
+readonly SCRIPT_VERSION="3.0.0"
 readonly SCRIPT_NAME="$(basename "$0")"
 
 # Colors
@@ -19,7 +19,7 @@ readonly NC='\033[0m'
 
 # Package definitions
 declare -A PACKAGES=(
-    ["claude-code"]="@anthropic-ai/claude-code"
+    ["claude"]="@anthropic-ai/claude-code"
     ["codex"]="@openai/codex"
 )
 
@@ -56,8 +56,9 @@ OPTIONS:
     -h, --help            Show this help message
 
 EXAMPLES:
-    ${SCRIPT_NAME}                    # Install all available tools
-    ${SCRIPT_NAME} -p claude-code     # Install only Claude Code
+    ${SCRIPT_NAME}                    # Install all tools (user-local)
+    ${SCRIPT_NAME} -p claude          # Install only Claude (user-local)
+    ${SCRIPT_NAME} --global           # Install globally (requires sudo)
     ${SCRIPT_NAME} --dry-run          # Preview changes
 
 EOF
@@ -107,12 +108,12 @@ add_to_path() {
     
     # Check if PATH entry already exists
     if [[ -f "$rc_file" ]] && grep -qF "$npm_bin" "$rc_file" 2>/dev/null; then
-        info "PATH already configured in $rc_file"
+        info "PATH already configured in $rc_file" >&2
     else
         echo "" >> "$rc_file"
         echo "# Added by ${SCRIPT_NAME} on $(date)" >> "$rc_file"
         echo "$export_line" >> "$rc_file"
-        info "Added $npm_bin to PATH in $rc_file"
+        info "Added $npm_bin to PATH in $rc_file" >&2
     fi
     
     # Export for current session (with duplication guard)
@@ -144,31 +145,43 @@ check_node_version() {
 ## Main Installation Logic
 ###############################################################################
 setup_npm_prefix() {
-    local force_user="$1"
-    local install_global=true
+    local force_global="$1"
+    local install_global=false
     local npm_cmd="npm"
-    local npm_prefix=""
+    local npm_prefix="${HOME}/.npm-global"
     
-    if [[ "$force_user" == "true" ]]; then
-        install_global=false
-    elif [[ $EUID -eq 0 ]]; then
-        npm_cmd="npm"
-    elif command_exists sudo && sudo -n true 2>/dev/null; then
-        npm_cmd="sudo npm"
+    if [[ "$force_global" == "true" ]]; then
+        # User explicitly wants global installation
+        if [[ $EUID -eq 0 ]]; then
+            npm_cmd="npm"
+            install_global=true
+            npm_prefix=""
+        elif command_exists sudo; then
+            # Check if npm is available to sudo
+            if sudo -n which npm >/dev/null 2>&1; then
+                npm_cmd="sudo npm"
+                install_global=true
+                npm_prefix=""
+            else
+                error "Cannot install globally: npm not available to sudo (likely installed via version manager)" >&2
+                error "Try without --global flag for user-local installation" >&2
+                exit 1
+            fi
+        else
+            error "Cannot install globally: no root access available" >&2
+            error "Try without --global flag for user-local installation" >&2
+            exit 1
+        fi
+        info "Installing globally (system-wide)" >&2
     else
-        warn "No root access available. Using user-local installation."
-        install_global=false
-    fi
-    
-    if [[ "$install_global" == "false" ]]; then
-        npm_prefix="${HOME}/.npm-global"
+        # Default: user-local installation
         mkdir -p "${npm_prefix}/lib" "${npm_prefix}/bin"
-        npm config --global set prefix "${npm_prefix}"
+        npm config --global set prefix "${npm_prefix}" 2>/dev/null
         add_to_path "${npm_prefix}/bin"
-        info "Configured npm for user-local installation"
+        info "Installing to user directory: ${npm_prefix}" >&2
     fi
     
-    # Return command and prefix
+    # Return command and prefix (this MUST be the only stdout output)
     echo "${npm_cmd}|${npm_prefix}"
 }
 
@@ -204,7 +217,7 @@ install_package() {
 ###############################################################################
 main() {
     local packages_to_install=""
-    local force_user=false
+    local force_global=false
     local dry_run=false
     local list_packages=false
     
@@ -216,8 +229,8 @@ main() {
                 packages_to_install="$2"
                 shift 2
                 ;;
-            -u|--user)
-                force_user=true
+            -g|--global)
+                force_global=true
                 shift
                 ;;
             -d|--dry-run)
@@ -263,7 +276,7 @@ main() {
     info "npm version: $(npm --version)"
     
     # Setup npm prefix
-    IFS='|' read -r npm_cmd npm_prefix <<< "$(setup_npm_prefix "$force_user")"
+    IFS='|' read -r npm_cmd npm_prefix <<< "$(setup_npm_prefix "$force_global")"
     
     # Determine packages to install
     if [[ -z "$packages_to_install" ]]; then
