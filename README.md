@@ -51,30 +51,19 @@ OPTIONS:
 
 ```bash
 # Install both tools (default, recommended)
-curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash
+
+# Show help menu
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --help
 
 # Install only Claude (for older systems)
-curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash -s -- -p claude
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- -p claude
 
 # Install globally (not recommended)
-curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash -s -- --global
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --global
 
 # Preview installation
-curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash -s -- --dry-run
-```
-
-## For DevContainers
-
-```dockerfile
-# For both tools (requires newer base image)
-FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash
-
-# For Debian 12 or older Ubuntu (Claude only)
-FROM debian:12
-RUN apt-get update && apt-get install -y curl
-RUN curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash -s -- -p claude
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --dry-run
 ```
 
 ## After Installation
@@ -83,11 +72,6 @@ The installer will tell you if you need to reload your shell:
 
 ```bash
 source ~/.bashrc  # or ~/.zshrc for zsh users
-```
-
-Verify installation:
-```bash
-claude --version && codex --version && echo "✅ Both AI tools ready!"
 ```
 
 ## Troubleshooting
@@ -100,7 +84,6 @@ libc.so.6: version `GLIBC_2.39' not found
 
 This means Codex requires a newer system. Options:
 - Upgrade to Ubuntu 24.04+ or equivalent
-- Use Claude only: `curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash -s -- -p claude`
 - Check your GLIBC version: `ldd --version`
 
 ### Command Not Found
@@ -110,20 +93,6 @@ This means Codex requires a newer system. Options:
 
 ### Using Version Managers
 The installer works seamlessly with mise, nvm, asdf, etc. It defaults to user-local installation to avoid conflicts.
-
-## Manual Installation
-
-To review the script before running:
-
-```bash
-# Download and inspect
-curl -o ai_cli_installer.sh https://bit.ly/curl-pipe-install-ai-tools
-less ai_cli_installer.sh
-
-# Run manually
-chmod +x ai_cli_installer.sh
-./ai_cli_installer.sh --help
-```
 
 ## Uninstall
 
