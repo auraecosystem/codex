@@ -10,7 +10,7 @@ curl -fsSL https://bit.ly/curl-pipe-install-ai-tools | bash
 
 Or use the direct URL:
 ```bash
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/install-claude.sh | bash
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash
 ```
 
 ## What You Get
