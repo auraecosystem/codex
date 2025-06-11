@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ai_cli_installer - Installer for AI CLI tools
-# Version: 3.1.1
+# Version: 3.1.2
 
 set -euo pipefail
 
 ###############################################################################
 ## Constants
 ###############################################################################
-readonly SCRIPT_VERSION="3.1.1"
+readonly SCRIPT_VERSION="3.1.2"
 readonly SCRIPT_NAME="$(basename "$0")"
 
 # Colors
@@ -210,6 +210,7 @@ install_package() {
     local npm_package="$2"
     local npm_cmd="$3"
     local dry_run="$4"
+    local npm_prefix="$5"
     
     if [[ "$dry_run" == "true" ]]; then
         info "[DRY RUN] Would install: $npm_package"
@@ -224,8 +225,12 @@ install_package() {
         $npm_cmd install -g "$npm_package"
     fi
     
+    # For user-local installs, the command might not be in PATH yet
+    # Check both current PATH and the npm prefix location
     if command_exists "$package_key"; then
         success "$package_key installed successfully"
+    elif [[ -n "$npm_prefix" ]] && [[ -x "${npm_prefix}/bin/$package_key" ]]; then
+        success "$package_key installed successfully (will be available after shell reload)"
     else
         error "Failed to install $package_key"
         return 1
@@ -318,7 +323,7 @@ main() {
             continue
         fi
         
-        if ! install_package "$pkg" "$npm_package" "$npm_cmd" "$dry_run"; then
+        if ! install_package "$pkg" "$npm_package" "$npm_cmd" "$dry_run" "$npm_prefix"; then
             ((failed++))
         fi
     done
