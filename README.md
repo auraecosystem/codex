@@ -1,12 +1,14 @@
-# AI CLI Installer v3
+# AI CLI Installer v3.1.1
 
 A robust bash script that installs AI-powered developer tools with a single command. No configuration needed.
 
 ## Quick Start
 
 ```bash
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash
 ```
+
+> **Source**: View the installer script at [gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4](https://gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4)
 
 ## What You Get
 
@@ -18,6 +20,7 @@ curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b0
 ## Features
 
 ✅ **Safe by Default** - User-local installation (`~/.npm-global`), no sudo needed  
+✅ **macOS Compatible** - Works with the default Bash 3.2 on macOS  
 ✅ **Version Manager Friendly** - Works perfectly with mise, nvm, asdf  
 ✅ **Multi-Shell Support** - Auto-configures bash, zsh, and fish  
 ✅ **Idempotent** - Run it multiple times safely  
@@ -27,6 +30,7 @@ curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b0
 
 - **Node.js** ≥ 18.x ([nodejs.org](https://nodejs.org))
 - **npm** (comes with Node.js)
+- **bash** ≥ 3.2 (works with macOS default bash)
 - **Operating System**:
   - **Claude**: Any Linux/macOS with bash
   - **Codex**: Ubuntu 24.04+, Fedora 40+, or any system with GLIBC 2.39+
@@ -51,19 +55,30 @@ OPTIONS:
 
 ```bash
 # Install both tools (default, recommended)
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash
-
-# Show help menu
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --help
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash
 
 # Install only Claude (for older systems)
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- -p claude
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash -s -- -p claude
 
 # Install globally (not recommended)
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --global
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash -s -- --global
 
 # Preview installation
-curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/554ab124b8ba5ad6b01709c3a412b2640c63e9ce/ai-tools.sh | bash -s -- --dry-run
+curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash -s -- --dry-run
+```
+
+## For DevContainers
+
+```dockerfile
+# For both tools (requires newer base image)
+FROM ubuntu:24.04
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash
+
+# For Debian 12 or older Ubuntu (Claude only)
+FROM debian:12
+RUN apt-get update && apt-get install -y curl
+RUN curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash -s -- -p claude
 ```
 
 ## After Installation
@@ -72,6 +87,11 @@ The installer will tell you if you need to reload your shell:
 
 ```bash
 source ~/.bashrc  # or ~/.zshrc for zsh users
+```
+
+Verify installation:
+```bash
+claude --version && codex --version && echo "✅ Both AI tools ready!"
 ```
 
 ## Troubleshooting
@@ -84,6 +104,7 @@ libc.so.6: version `GLIBC_2.39' not found
 
 This means Codex requires a newer system. Options:
 - Upgrade to Ubuntu 24.04+ or equivalent
+- Use Claude only: `curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash -s -- -p claude`
 - Check your GLIBC version: `ldd --version`
 
 ### Command Not Found
@@ -93,6 +114,20 @@ This means Codex requires a newer system. Options:
 
 ### Using Version Managers
 The installer works seamlessly with mise, nvm, asdf, etc. It defaults to user-local installation to avoid conflicts.
+
+## Manual Installation
+
+To review the script before running:
+
+```bash
+# Download and inspect
+curl -o ai_cli_installer.sh https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh
+less ai_cli_installer.sh
+
+# Run manually
+chmod +x ai_cli_installer.sh
+./ai_cli_installer.sh --help
+```
 
 ## Uninstall
 
