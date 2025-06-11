@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ai_cli_installer - Installer for AI CLI tools
-# Version: 3.0.0
+# Version: 3.1.1
 
 set -euo pipefail
 
 ###############################################################################
 ## Constants
 ###############################################################################
-readonly SCRIPT_VERSION="3.0.0"
+readonly SCRIPT_VERSION="3.1.1"
 readonly SCRIPT_NAME="$(basename "$0")"
 
 # Colors
@@ -17,11 +17,30 @@ readonly RED='\033[0;31m'
 readonly BLUE='\033[0;34m'
 readonly NC='\033[0m'
 
-# Package definitions
-declare -A PACKAGES=(
-    ["claude"]="@anthropic-ai/claude-code"
-    ["codex"]="@openai/codex"
-)
+# Package definitions (Bash 3.2 compatible - no associative arrays)
+# Format: package_name:npm_package
+PACKAGES="claude:@anthropic-ai/claude-code codex:@openai/codex"
+
+# Helper function to get npm package name
+get_npm_package() {
+    local key="$1"
+    for pkg in $PACKAGES; do
+        if [[ "${pkg%%:*}" == "$key" ]]; then
+            echo "${pkg#*:}"
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Helper function to list available packages
+list_package_names() {
+    local names=""
+    for pkg in $PACKAGES; do
+        names="$names ${pkg%%:*}"
+    done
+    echo "${names# }"  # Remove leading space
+}
 
 ###############################################################################
 ## Output Functions
@@ -47,9 +66,10 @@ USAGE:
 
 OPTIONS:
     -p, --packages LIST    Comma-separated list of packages to install
-                          Available: ${!PACKAGES[@]}
+                          Available: $(list_package_names)
                           Default: all available packages
-    -u, --user            Force user-local installation
+    -g, --global          Install globally (requires sudo)
+                          Default: user-local installation
     -d, --dry-run         Show what would be done without making changes
     -l, --list            List available packages
     -v, --version         Show version information
@@ -260,8 +280,10 @@ main() {
     # List packages if requested
     if [[ "$list_packages" == "true" ]]; then
         echo "Available packages:"
-        for pkg in "${!PACKAGES[@]}"; do
-            echo "  - $pkg (${PACKAGES[$pkg]})"
+        for pkg in $PACKAGES; do
+            local name="${pkg%%:*}"
+            local npm_pkg="${pkg#*:}"
+            echo "  - $name ($npm_pkg)"
         done
         exit 0
     fi
@@ -280,7 +302,7 @@ main() {
     
     # Determine packages to install
     if [[ -z "$packages_to_install" ]]; then
-        packages_to_install=$(IFS=,; echo "${!PACKAGES[*]}")
+        packages_to_install=$(list_package_names | tr ' ' ',')
     fi
     
     # Install packages
@@ -290,12 +312,13 @@ main() {
     for pkg in "${requested_packages[@]}"; do
         pkg=$(echo "$pkg" | tr -d ' ')  # Trim whitespace
         
-        if [[ -z "${PACKAGES[$pkg]:-}" ]]; then
+        local npm_package=$(get_npm_package "$pkg")
+        if [[ -z "$npm_package" ]]; then
             warn "Unknown package: $pkg"
             continue
         fi
         
-        if ! install_package "$pkg" "${PACKAGES[$pkg]}" "$npm_cmd" "$dry_run"; then
+        if ! install_package "$pkg" "$npm_package" "$npm_cmd" "$dry_run"; then
             ((failed++))
         fi
     done
