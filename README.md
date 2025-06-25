@@ -39,7 +39,7 @@ Source: [gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4](https://gis
 ai_cli_installer [OPTIONS]
 
 OPTIONS:
-    -p, --packages LIST    Comma-separated list (claude, codex, gemini)
+    -p, --packages LIST   Comma-separated list (eg: "claude,codex,gemini" )
                           Default: all three tools
     -g, --global          Install globally (requires sudo)
                           Default: user-local installation
