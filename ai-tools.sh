@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ai_cli_installer - Installer for AI CLI tools
-# Version: 3.1.2
+# Version: 3.2.0
 
 set -euo pipefail
 
 ###############################################################################
 ## Constants
 ###############################################################################
-readonly SCRIPT_VERSION="3.1.2"
+readonly SCRIPT_VERSION="3.2.0"
 readonly SCRIPT_NAME="$(basename "$0")"
 
 # Colors
@@ -19,7 +19,7 @@ readonly NC='\033[0m'
 
 # Package definitions (Bash 3.2 compatible - no associative arrays)
 # Format: package_name:npm_package
-PACKAGES="claude:@anthropic-ai/claude-code codex:@openai/codex"
+PACKAGES="claude:@anthropic-ai/claude-code codex:@openai/codex gemini:@google/gemini-cli"
 
 # Helper function to get npm package name
 get_npm_package() {
@@ -78,6 +78,7 @@ OPTIONS:
 EXAMPLES:
     ${SCRIPT_NAME}                    # Install all tools (user-local)
     ${SCRIPT_NAME} -p claude          # Install only Claude (user-local)
+    ${SCRIPT_NAME} -p claude,gemini   # Install Claude and Gemini
     ${SCRIPT_NAME} --global           # Install globally (requires sudo)
     ${SCRIPT_NAME} --dry-run          # Preview changes
 
