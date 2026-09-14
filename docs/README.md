@@ -4,11 +4,11 @@ Bash script for installing AI-powered command-line development tools.
 
 ## Quick Start
 
-```bash
+```inputrc
 curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash
 ```
 
-Source: [gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4](https://gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4#file-ai-tools-sh)
+>>Source: [gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4](https://gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4#file-ai-tools-sh)
 
 ## Available Tools
 
@@ -35,7 +35,7 @@ Source: [gist.github.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4](https://gis
 
 ## Usage
 
-```bash
+```cmd
 ai_cli_installer [OPTIONS]
 
 OPTIONS:
@@ -59,7 +59,7 @@ export AI_INSTALLER="https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f
 
 Installation commands:
 
-```bash
+```ps1
 # Install all three tools (default)
 curl -fsSL $AI_INSTALLER | bash
 
@@ -87,7 +87,7 @@ curl -fsSL $AI_INSTALLER | bash -s -- --help
 
 Standard installation:
 
-```dockerfile
+```dockerfile-ce
 FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y curl
 RUN curl -fsSL https://gist.githubusercontent.com/usrbinkat/e36f12cd0d8c0f98decc80b092c447f4/raw/ai-tools.sh | bash
@@ -114,13 +114,13 @@ RUN apt-get update && apt-get install -y curl && \
 
 Reload your shell configuration:
 
-```bash
+```shell
 source ~/.bashrc  # or ~/.zshrc for zsh users
 ```
 
 Verify installations:
 
-```bash
+```console
 claude --version
 codex --version
 gemini --version
