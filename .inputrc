@@ -1,0 +1,43 @@
+# CHAT PANE
+#! TmuxAI
+tmuxai find large files and cleanup some space
+TmuxAI » I'll help you find large files taking up space in this directory.
+TmuxAI » find . -type f -size +100M -exec du -h {} \; | sort -rh
+Do you want to execute this command? [Y]es/No/Edit:
+TmuxAI » Found several large files in node_modules and logs directories.
+TmuxAI » rm -i ./logs/debug-*.log
+Do you want to execute this command? [Y]es/No/Edit: _
+»
+start docker container mysql and then connect to mysql shell.
+First I'll start the container:
+TmuxAI
+»
+docker run --name mysql_container -e MYSQL_ROOT_PASSWORD=password -d mysql:latest
+Do you want to execute this command? [Y]es/No/Edit:
+TmuxAI» Now I will connect to the mysql shell.
+TmuxAI
+»
+docker exec -it mysql_container mysql -u root -p
+Do you want to execute this command? [Y]es/No/Edit:
+TmuxAI» I'll now send the password to the mysql shell.
+TmuxAI
+»
+Sending keys: password
+TmuxAI
+»
+Sending keys: Enter
+TmuxAI» I've successfully connected to the MySQL shell.
+EXEC PANE
+$ docker run --name mysql_container -e MYSQL_ROOT_PASSWORD=password -d mysql:latest
+6d76ba47b7f
+$ docker exec -it mysql_container mysql -u root -p
+Enter password:
+Welcome to the MySQL monitor. Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.2.0 MySQL Community Server - GPL
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+mysql>
